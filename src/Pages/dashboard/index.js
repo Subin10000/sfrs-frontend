@@ -62,10 +62,10 @@ const Dashboard = () => {
                 </Grid>
 
                 <Box mt={4}>
-                    <Divider />
-                    <Typography variant="h5" gutterBottom>
+                    <Typography variant="h4" gutterBottom>
                         Attendance Overview
                     </Typography>
+                    <Divider />
                     <Box
                         sx={{
                             display: 'flex',

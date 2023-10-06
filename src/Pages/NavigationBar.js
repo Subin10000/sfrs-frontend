@@ -20,6 +20,7 @@ import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SportsHandballIcon from '@mui/icons-material/SportsHandball';
 import Dashboard from './dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const drawerWidth = 240;
 
@@ -74,11 +75,11 @@ export default function SideNavigation() {
           </List>
           <Divider />
           <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
+            {['Mail'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    <MailIcon />
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
@@ -87,11 +88,11 @@ export default function SideNavigation() {
           </List>
           <Divider />
           <List>
-            {['Spam'].map((text, index) => (
+            {['Logout'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    <LogoutIcon/>
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
@@ -106,8 +107,18 @@ export default function SideNavigation() {
         <Typography paragraph width="100%">
           <Dashboard/>
         </Typography>
+        <Divider />
+
         <Typography paragraph style={{ fontStyle: 'italic', color: 'rgba(0, 0, 0, 0.5)', textAlign:'center' }}>
             This dashboard provides a comprehensive overview of students' attendance data categorized by faculty and class. For further inspection, please go to the attendance page...
+        </Typography>
+        <Typography paragraph style={{ fontStyle: 'italic', color: 'rgba(0, 0, 0, 0.5)', textAlign:"center", display:'flex', flexDirection:"column", alignItems:"center" }}>
+          <div style={{width:"70%"}}>
+          For support and inquiries, please contact us at support@example.com or
+          </div>
+          <div style={{width:"40%"}}>
+          call us at +1 (123) 456-7890.
+          </div>
         </Typography>
       </Box>
     </Box>
