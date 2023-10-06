@@ -23,6 +23,12 @@ import { Link } from "react-router-dom";
 const drawerWidth = 240;
 
 export default function Layout({ children }) {
+  const logout = () => {
+    localStorage.removeItem("token");
+    // Navigate to the login page
+    navigate("/login");
+  }
+ 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -95,7 +101,7 @@ export default function Layout({ children }) {
               </ListItemButton>
             </ListItem>
             <ListItem key="Logout" disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={logout}>
                 <ListItemIcon>
                   <LogoutIcon />
                 </ListItemIcon>
