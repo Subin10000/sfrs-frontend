@@ -15,7 +15,6 @@ import {
 import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import NavBar from "./Components/NavBar";
 
 const AddStudents = () => {
   const navigate = useNavigate();
@@ -99,7 +98,6 @@ const AddStudents = () => {
 
   return (
     <Container component="main" maxWidth="md">
-      <NavBar />
       <Paper elevation={3} style={{ padding: 20 }}>
         <Typography component="h1" variant="h5" align="center">
           Add Students

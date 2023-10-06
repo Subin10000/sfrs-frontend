@@ -1,10 +1,12 @@
 import "./App.css";
 import Home from "./Pages/Home";
-import AddStudents from "./Pages/AddStudents";
 import Login from "./Pages/Login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NoPage from "./Pages/NoPage";
-import AddTeacher from "./Pages/AddTeacher";
+import AddStudents from "./Pages/student/AddStudents";
+import AddTeacher from "./Pages/teacher/AddTeacher";
+import Student from "./Pages/student";
+import Teacher from "./Pages/teacher";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Route path="/nopage" element={<NoPage />} />
           <Route path="/addStudents" element={<AddStudents />} />
           <Route path="/addStudents" element={<AddTeacher />} />
+          <Route path="/addStudents" element={<Student />} />
+          <Route path="/addStudents" element={<Teacher />} />
           {/* <Route path="/search/:id" element={<SearchResult />} /> */}
         </Routes>
       </Router>
