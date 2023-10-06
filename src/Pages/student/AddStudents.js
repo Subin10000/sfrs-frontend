@@ -29,7 +29,7 @@ const AddStudents = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
+  const [selectedFile, setSelectedFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -37,7 +37,7 @@ const AddStudents = () => {
   useEffect(() => {
     // Check if token is set in localStorage
     const token = localStorage.getItem("token");
-  
+
     if (!token) {
       // If token is not set, navigate to the login page
       navigate("/login");
@@ -54,6 +54,13 @@ const AddStudents = () => {
 
   const handleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      console.log("Selected file:", file.name);
+      setSelectedFile(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -187,8 +194,34 @@ const AddStudents = () => {
               />
             </Grid>
             <Grid item xs={6}>
-              {/* File Upload Field */}
-              {/* Add your file upload component here */}
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} sm={6}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="file-upload"
+                    onChange={handleFileSelect}
+                  />
+                  <label htmlFor="file-upload">
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      component="span"
+                      color="primary"
+                    >
+                      Upload Image
+                    </Button>
+                  </label>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {selectedFile && (
+                    <Typography variant="subtitle1">
+                      {selectedFile.name}
+                    </Typography>
+                  )}
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item xs={12} align="center">
               <Button
