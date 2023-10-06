@@ -61,18 +61,41 @@ export default function SideNavigation() {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          <List>
-            {['Dashboard', 'Students', 'Teachers', 'Attendance'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {iconRender(text)}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+        <List>
+  <ListItem key="Dashboard" disablePadding>
+    <ListItemButton component={Link} to="/dashboard">
+      <ListItemIcon>
+        <DashboardIcon />
+      </ListItemIcon>
+      <ListItemText primary="Dashboard" />
+    </ListItemButton>
+  </ListItem>
+  <ListItem key="Students" disablePadding>
+    <ListItemButton component={Link} to="/students">
+      <ListItemIcon>
+        <SupervisedUserCircleIcon />
+      </ListItemIcon>
+      <ListItemText primary="Students" />
+    </ListItemButton>
+  </ListItem>
+  <ListItem key="Teachers" disablePadding>
+    <ListItemButton component={Link} to="/teachers">
+      <ListItemIcon>
+        <AccountCircleIcon />
+      </ListItemIcon>
+      <ListItemText primary="Teachers" />
+    </ListItemButton>
+  </ListItem>
+  <ListItem key="Attendance" disablePadding>
+    <ListItemButton component={Link} to="/attendance">
+      <ListItemIcon>
+        <SportsHandballIcon />
+      </ListItemIcon>
+      <ListItemText primary="Attendance" />
+    </ListItemButton>
+  </ListItem>
+</List>
+
           <Divider />
           <List>
             {['Mail'].map((text, index) => (
