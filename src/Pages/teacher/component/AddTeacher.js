@@ -11,40 +11,46 @@ import {
   Grid,
   Paper,
 } from "@mui/material";
+import axios from "axios";
 
 const AddTeacher = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    password: "",
     role: "",
-    selectedClass: "",
-    selectedFaculty: "", // Initialize with an empty string
+    class: "",
+    faculty: "",
   });
 
   const [classList, setClassList] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
 
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/dropdown");
+      const apiData = response.data;
+      const semesters = apiData.filter(item => item.type === "semester");
+      const faculties = apiData.filter(item => item.type === "Faculty");
+      setClassList(semesters);
+      setFacultyList(faculties);
+    } catch (error) {
+      console.error("Error fetching teacher data:", error);
+    }
+  };
   useEffect(() => {
-    // Fetch class and faculty data from API and setClassList/setFacultyList
-    // Example:
-    // axios.get('/api/classes').then(response => setClassList(response.data));
-    // axios.get('/api/faculties').then(response => setFacultyList(response.data));
-  }, []); // Empty dependency array ensures this effect runs once after initial render
+    fetchData();
+  }, []); 
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Send form data to API endpoint using Axios
-    // Example:
-    // axios.post('/api/teachers', formData).then(response => {
-    //   // Handle successful response, e.g., redirect to another page or show a success message
-    // }).catch(error => {
-    //   // Handle error, e.g., show an error message to the user
-    // });
+    console.log(formData);
+    // const response = await axios.post("http://localhost:8000/teacher/create");
+    // const apiData = response.data;
   };
 
   return (
@@ -102,14 +108,14 @@ const AddTeacher = () => {
                 <Select
                   id="class-select"
                   name="selectedClass"
-                  value={formData.selectedClass}
+                  value={formData.class}
                   onChange={handleInputChange}
                   required
                 >
                   <MenuItem value="">Select Class</MenuItem>
                   {classList.map((classItem) => (
                     <MenuItem key={classItem.id} value={classItem.id}>
-                      {classItem.name}
+                      {classItem.title}
                     </MenuItem>
                   ))}
                 </Select>
@@ -121,14 +127,14 @@ const AddTeacher = () => {
                 <Select
                   id="faculty-select"
                   name="selectedFaculty"
-                  value={formData.selectedFaculty}
-                  onChange={handleInputChange}
+                  value={formData.faculty}
+                  onChange={handleInputChange}  
                   required
                 >
                   <MenuItem value="">Select Faculty</MenuItem>
                   {facultyList.map((facultyItem) => (
                     <MenuItem key={facultyItem.id} value={facultyItem.id}>
-                      {facultyItem.name}
+                      {facultyItem.title}
                     </MenuItem>
                   ))}
                 </Select>

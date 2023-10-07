@@ -17,16 +17,15 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 const AddStudents = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fname: "",
-    lname: "",
+    firstname: "",
+    lastname: "",
     phone: "",
     email: "",
-    password: "",
+    roll: "",
     classid: "",
-    facultyid: "",
+    faculty: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -34,13 +33,15 @@ const AddStudents = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isStep1Complete, setIsStep1Complete] = useState(false);
+  const [imageId, setImageId] = useState(""); // Store the image_id
+  const [imagePath, setImagePath] = useState(""); // Store the image file path
 
   useEffect(() => {
     // Check if token is set in localStorage
     const token = localStorage.getItem("token");
 
     if (!token) {
-      // If token is not set, navigate to the login page
+      // If the token is not set, navigate to the login page
       navigate("/login");
       return; // No need to fetch attendance data if not authenticated
     }
@@ -48,9 +49,9 @@ const AddStudents = () => {
 
   // Monitor changes in form data and update isStep1Complete
   useEffect(() => {
-    const { fname, lname, phone, email, classid, facultyid } = formData;
+    const { firstname, lastname, phone, email, classid, roll, faculty } = formData;
     const allFieldsFilled =
-      fname && lname && phone && email && classid && facultyid;
+      firstname && lastname && phone && email && classid && faculty && roll;
     setIsStep1Complete(allFieldsFilled);
   }, [formData]);
 
@@ -61,15 +62,37 @@ const AddStudents = () => {
     });
   };
 
-  const handleShowPassword = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
-  };
-
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
       console.log("Selected file:", file.name);
-      setSelectedFile(file);
+      const fileName = formData.firstname
+        ? `${formData.firstname}.png`
+        : `default.png`; // Default name if firstname is empty
+      uploadAndRenameImage(file, fileName);
+    }
+  };
+
+  // Function to upload and rename the image
+  const uploadAndRenameImage = async (file, fileName) => {
+    const formDataForUpload = new FormData();
+    formDataForUpload.append("file", file, fileName);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/students/upload",
+        formDataForUpload
+      );
+      setImageId(response.data.image_id);
+      setImagePath(response.data.filePath); // Store the image file path
+      setSnackbarMessage("Image uploaded successfully.");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage("Error uploading image.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      console.error(error);
     }
   };
 
@@ -88,32 +111,43 @@ const AddStudents = () => {
     e.preventDefault();
 
     try {
+      // Add image_id to the form data before sending
+      const formDataWithImageId = {
+        ...formData,
+        image_id: imageId,
+        image: imagePath, // Include the image path
+      };
+
+      // Send the form data with the renamed image path
       const response = await axios.post(
-        "http://127.0.0.1:5000/api/register",
-        formData
+        "http://localhost:8000/students/create",
+        formDataWithImageId
       );
-      setSnackbarMessage("Email sent successfully!");
+      setSnackbarMessage("Student added successfully!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
       console.log(response.data); // Handle success
 
-      // Clear the form data after successful AddStudents
+      // Clear the form data after successful AddStudent
       setFormData({
-        fname: "",
-        lname: "",
+        firstname: "",
+        lastname: "",
         phone: "",
         email: "",
-        password: "",
+        roll: "",
         classid: "",
-        facultyid: "",
+        faculty: "",
       });
+      setSelectedFile(null);
+      setImageId("");
+      setImagePath("");
 
-      // Optionally, you can redirect to the login page after a delay (e.g., 2 seconds)
+      // Optionally, you can redirect to another page after a delay (e.g., 2 seconds)
       setTimeout(() => {
-        navigate("/login");
+        navigate("/students");
       }, 2000);
     } catch (error) {
-      setSnackbarMessage("Error sending email.");
+      setSnackbarMessage("Error adding student.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       console.error(error); // Handle error
@@ -137,8 +171,8 @@ const AddStudents = () => {
                 <TextField
                   fullWidth
                   label="First Name"
-                  name="fname"
-                  value={formData.fname}
+                  name="firstname"
+                  value={formData.firstname}
                   onChange={handleChange}
                   required
                 />
@@ -147,8 +181,8 @@ const AddStudents = () => {
                 <TextField
                   fullWidth
                   label="Last Name"
-                  name="lname"
-                  value={formData.lname}
+                  name="lastname"
+                  value={formData.lastname}
                   onChange={handleChange}
                   required
                 />
@@ -166,10 +200,10 @@ const AddStudents = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Email"
+                  label="email"
                   name="email"
                   type="email"
-                  value={formData.email}
+                  value={formData.mail}
                   onChange={handleChange}
                   required
                   autoFocus
@@ -188,9 +222,19 @@ const AddStudents = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
+                  label="Roll"
+                  name="roll"
+                  value={formData.roll}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
                   label="Faculty ID"
-                  name="facultyid"
-                  value={formData.facultyid}
+                  name="faculty"
+                  value={formData.faculty}
                   onChange={handleChange}
                   required
                 />
@@ -210,47 +254,53 @@ const AddStudents = () => {
             </Grid>
           </form>
         ) : (
-          <form onSubmit={handleSubmit}>
-            <Grid item xs={12} align="center">
-              <input
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                id="file-upload"
-                onChange={handleFileSelect}
-              />
-              <label htmlFor="file-upload">
-                <Button
-                  fullWidth
-                  variant="contained"
-                  component="span"
-                  color="primary"
-                  size="small"
-                  style={{
-                    margin: "4rem 0 0.5rem 0",
-                    width: "15rem",
-                    padding: "1rem",
-                  }}
-                >
-                  Upload Image
-                </Button>
-              </label>
-              {selectedFile && (
-                <Typography variant="subtitle1">{selectedFile.name}</Typography>
-              )}
-            </Grid>
+          currentStep === 2 && (
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} align="center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="file-upload"
+                    onChange={handleFileSelect}
+                  />
+                  <label htmlFor="file-upload">
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      component="span"
+                      color="primary"
+                      size="small"
+                      style={{
+                        margin: "4rem 0 0.5rem 0",
+                        width: "15rem",
+                        padding: "1rem",
+                      }}
+                    >
+                      Upload Image
+                    </Button>
+                  </label>
+                  {selectedFile && (
+                    <Typography variant="subtitle1">
+                      {selectedFile.name}
+                    </Typography>
+                  )}
+                </Grid>
 
-            <Grid item xs={12} align="center">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                style={{ marginTop: "3rem" }}
-              >
-                Add Student
-              </Button>
-            </Grid>
-          </form>
+                <Grid item xs={12} align="center">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    style={{ marginTop: "3rem" }}
+                  >
+                    Add Student
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          )
         )}
       </Paper>
       <Snackbar
