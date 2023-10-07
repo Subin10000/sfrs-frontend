@@ -12,6 +12,9 @@ import {
   Paper,
 } from "@mui/material";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const AddTeacher = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +27,7 @@ const AddTeacher = () => {
 
   const [classList, setClassList] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
+  const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
   const fetchData = async () => {
     try {
@@ -47,11 +51,26 @@ const AddTeacher = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // const response = await axios.post("http://localhost:8000/teacher/create");
-    // const apiData = response.data;
-  };
 
+    const teacherData = {
+      name: formData.name,
+      email: formData.email,
+      role: formData.role,
+      class: parseInt(formData.class),
+      faculty: parseInt(formData.faculty),
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/teacher/create",
+        teacherData
+      );
+
+      navigate("/teachers");
+    } catch (error) {
+      console.error("Error adding teacher:", error);
+    }
+  };
   return (
     <Container style={{ marginTop: "2rem", textAlign: "center" }}>
       <Paper elevation={3} style={{ padding: 20 }}>
@@ -97,7 +116,6 @@ const AddTeacher = () => {
                   <MenuItem value="">Select Role</MenuItem>
                   <MenuItem value="admin">Admin</MenuItem>
                   <MenuItem value="teacher">Teacher</MenuItem>
-                  {/* Add other roles as MenuItems */}
                 </Select>
               </FormControl>
             </Grid>
@@ -152,6 +170,7 @@ const AddTeacher = () => {
           </Grid>
         </form>
       </Paper>
+      <ToastContainer />
     </Container>
   );
 };
