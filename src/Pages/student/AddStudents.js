@@ -49,8 +49,7 @@ const AddStudents = () => {
 
   // Monitor changes in form data and update isStep1Complete
   useEffect(() => {
-    const { firstname, lastname, phone, email, classid, roll, faculty } =
-      formData;
+    const { firstname, lastname, phone, mail, classid, faculty } = formData;
     const allFieldsFilled =
       firstname && lastname && phone && email && classid && faculty && roll;
     setIsStep1Complete(allFieldsFilled);
