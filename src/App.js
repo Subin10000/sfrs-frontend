@@ -5,9 +5,10 @@ import NoPage from "./Pages/NoPage";
 import AddStudents from "./Pages/student/AddStudents";
 import Student from "./Pages/student";
 import Teacher from "./Pages/teacher";
-import AddTeacher from "./Pages/teacher/conponent/AddTeacher";
+import AddTeacher from "./Pages/teacher/component/AddTeacher";
 import Layout from "./Layout/MainLayout";
 import DashboardComponent from "./Pages/dashboard";
+import EmailTemplatePage from "./Pages/Mail";
 
 function App() {
   return (
@@ -20,9 +21,10 @@ function App() {
           <Route path="/" element={<DashboardComponent />} />
           <Route path="/nopage" element={<NoPage />} />
           <Route path="/addStudents" element={<AddStudents />} />
-          <Route path="/addStudents" element={<AddTeacher />} />
+          <Route path="/addTeacher" element={<AddTeacher />} />
           <Route path="/students" element={<Student />} />
           <Route path="/teachers" element={<Teacher />} />
+          <Route path="/mail" element={<EmailTemplatePage />} />
           {/* <Route path="/search/:id" element={<SearchResult />} /> */}
         </Routes>
       </Router>

@@ -247,7 +247,7 @@ const AddStudents = () => {
                 color="primary"
                 style={{ marginTop: "3rem" }}
               >
-                Sign Up
+                Add Student
               </Button>
             </Grid>
           </form>

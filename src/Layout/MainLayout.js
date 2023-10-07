@@ -102,7 +102,7 @@ export default function Layout({ children }) {
               <List>
                 {/* Mail and Logout items */}
                 <ListItem key="Mail" disablePadding>
-                  <ListItemButton>
+                  <ListItemButton component={Link} to="/mail">
                     <ListItemIcon>
                       <MailIcon />
                     </ListItemIcon>

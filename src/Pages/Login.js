@@ -21,15 +21,14 @@ function Login() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-  
+
     if (token) {
-      console.log('hello');
+      console.log("hello");
       // If token is not set, navigate to the login page
-      navigate("/home");
+      navigate("/");
       return; // No need to fetch attendance data if not authenticated
     }
-  })
-  
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,11 +43,14 @@ function Login() {
     setError(""); // Clear previous error message
 
     try {
-      const response = await axios.post("http://localhost:8000/users/login", formData); // Make an API request to your login endpoint
+      const response = await axios.post(
+        "http://localhost:8000/users/login",
+        formData
+      ); // Make an API request to your login endpoint
       const token = response.data.token;
       console.log(token);
       localStorage.setItem("token", token);
-      navigate("/home"); // Navigate to the home page
+      navigate("/"); // Navigate to the dashboard
     } catch (error) {
       console.error("Login failed:", error);
       setError("Invalid email or password");
