@@ -25,21 +25,12 @@ const AddTeacher = () => {
   const [classList, setClassList] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/dropdown");
-      const apiData = response.data;
-      const semesters = apiData.filter((item) => item.type === "semester");
-      const faculties = apiData.filter((item) => item.type === "Faculty");
-      setClassList(semesters);
-      setFacultyList(faculties);
-    } catch (error) {
-      console.error("Error fetching teacher data:", error);
-    }
-  };
   useEffect(() => {
-    fetchData();
-  }, []);
+    // Fetch class and faculty data from API and setClassList/setFacultyList
+    // Example:
+    // axios.get('/api/classes').then(response => setClassList(response.data));
+    // axios.get('/api/faculties').then(response => setFacultyList(response.data));
+  }, []); // Empty dependency array ensures this effect runs once after initial render
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -106,8 +97,8 @@ const AddTeacher = () => {
                 <InputLabel htmlFor="class-select">Class</InputLabel>
                 <Select
                   id="class-select"
-                  name="class"
-                  value={formData.class}
+                  name="selectedClass"
+                  value={formData.selectedClass}
                   onChange={handleInputChange}
                   required
                 >
@@ -125,8 +116,8 @@ const AddTeacher = () => {
                 <InputLabel htmlFor="faculty-select">Faculty</InputLabel>
                 <Select
                   id="faculty-select"
-                  name="faculty"
-                  value={formData.faculty}
+                  name="selectedFaculty"
+                  value={formData.selectedFaculty}
                   onChange={handleInputChange}
                   required
                 >
