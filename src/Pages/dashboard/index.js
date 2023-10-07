@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Box, CircularProgress, Container, Divider, Grid, Typography } from "@mui/material";
 import DashboardCard from "../Components/DashboardCard";
-import { PieChart } from "@mui/x-charts";
+import { LineChart, PieChart } from "@mui/x-charts";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 
 
 const DashboardComponent = () => {
   const [teacherData, setTeacherData] = useState(null);
-  const [studentData, setStudentData] = useState(null);
-  const [attendanceData, setAttendanceData] = useState(null);
+  const [studentData, setStudentData] = useState([]);
+  const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -47,7 +48,7 @@ const DashboardComponent = () => {
     return <CircularProgress />;
   }
   return (
-    <Container sx={{ marginTop: "20%", paddingLeft: 0 }}>
+    <Container sx={{ marginTop: "10%", paddingLeft: 0 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={4}>
           <DashboardCard
@@ -80,15 +81,9 @@ const DashboardComponent = () => {
           Attendance Overview
         </Typography>
         <Divider />
-        <Box
-          sx={{
-            display: "flex",
-            height: "400px", // Set your desired height
-          }}
-        >
           <Box
             sx={{
-              width: "50%",
+              width: "100%",
               margin: "10px",
               display: "flex",
               justifyContent: "center",
@@ -105,12 +100,12 @@ const DashboardComponent = () => {
                     { id: 1, value: studentData?.length-attendanceData?.length, label: "Present" },
                   ],
                   innerRadius: 40,
-                  outerRadius: 100,
+                  outerRadius: 150,
                   paddingAngle: 5,
                   cornerRadius: 5,
                   startAngle: -90,
                   endAngle: 180,
-                  cx: 200,
+                  cx: 150,
                   cy: 200,
                 },
               ]}
@@ -118,20 +113,6 @@ const DashboardComponent = () => {
               height={400}
             />
           </Box>
-          <Box
-            sx={{
-              width: "50%",
-              display: "flex",
-              margin: "10px",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#f5f5f5", // Set your desired background color
-              height: "400px", // Set your desired height
-            }}
-          >
-            <div>Hello world</div>
-          </Box>
-        </Box>
       </Box>
     </Container>
   );
