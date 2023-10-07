@@ -25,13 +25,12 @@ const AddTeacher = () => {
   const [classList, setClassList] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
 
-
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:8000/dropdown");
       const apiData = response.data;
-      const semesters = apiData.filter(item => item.type === "semester");
-      const faculties = apiData.filter(item => item.type === "Faculty");
+      const semesters = apiData.filter((item) => item.type === "semester");
+      const faculties = apiData.filter((item) => item.type === "Faculty");
       setClassList(semesters);
       setFacultyList(faculties);
     } catch (error) {
@@ -40,7 +39,7 @@ const AddTeacher = () => {
   };
   useEffect(() => {
     fetchData();
-  }, []); 
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -107,7 +106,7 @@ const AddTeacher = () => {
                 <InputLabel htmlFor="class-select">Class</InputLabel>
                 <Select
                   id="class-select"
-                  name="selectedClass"
+                  name="class"
                   value={formData.class}
                   onChange={handleInputChange}
                   required
@@ -126,9 +125,9 @@ const AddTeacher = () => {
                 <InputLabel htmlFor="faculty-select">Faculty</InputLabel>
                 <Select
                   id="faculty-select"
-                  name="selectedFaculty"
+                  name="faculty"
                   value={formData.faculty}
-                  onChange={handleInputChange}  
+                  onChange={handleInputChange}
                   required
                 >
                   <MenuItem value="">Select Faculty</MenuItem>
