@@ -18,9 +18,11 @@ const Student = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/students?classId=${classId}&facultyId=${facultyId}&search=`);
+        const response = await axios.get(
+          `http://localhost:8000/students?classId=${classId}&facultyId=${facultyId}&search=`
+        );
         const dataFromBackend = await response.data;
-        console.log(dataFromBackend)
+        console.log(dataFromBackend);
         setStudents(dataFromBackend);
       } catch (error) {
         console.error("Error fetching student data:", error);
@@ -31,7 +33,7 @@ const Student = () => {
   }, []);
 
   return (
-    <div style={{width: 1000, height: "80vh"}}>
+    <div style={{ width: 1000, height: "80vh" }}>
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
       >
@@ -62,7 +64,7 @@ const Student = () => {
                 <TableCell>{student?.firstname}</TableCell>
                 <TableCell>{student?.lastname}</TableCell>
                 <TableCell>{student?.roll}</TableCell>
-                <TableCell>{student?.email}</TableCell>
+                <TableCell>{student?.mail}</TableCell>
               </TableRow>
             ))}
           </TableBody>
