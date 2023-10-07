@@ -62,7 +62,7 @@ const Student = () => {
                 <TableCell>{student?.firstname}</TableCell>
                 <TableCell>{student?.lastname}</TableCell>
                 <TableCell>{student?.roll}</TableCell>
-                <TableCell>{student?.mail}</TableCell>
+                <TableCell>{student?.email}</TableCell>
               </TableRow>
             ))}
           </TableBody>

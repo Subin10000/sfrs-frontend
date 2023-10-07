@@ -8,22 +8,21 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import axios from "axios";
 
 const Teacher = () => {
   const [teacher, setTeacher] = useState([]);
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/teacher");
+      setTeacher(response.data);
+    } catch (error) {
+      console.error("Error fetching teacher data:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/teacher");
-        const dataFromBackend = await response.json();
-
-        setTeacher(dataFromBackend);
-      } catch (error) {
-        console.error("Error fetching teacher data:", error);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -56,10 +55,10 @@ const Teacher = () => {
           <TableBody>
             {teacher.map((teach) => (
               <TableRow key={teach.id}>
-                <TableCell>{teach.name}</TableCell>
-                <TableCell>{teach.email}</TableCell>
-                <TableCell>{teach.className}</TableCell>
-                <TableCell>{teach.faculty}</TableCell>
+                <TableCell>{teach.user.name}</TableCell>
+                <TableCell>{teach.user.email}</TableCell>
+                <TableCell>{teach.class.id}</TableCell>
+                <TableCell>{teach.faculty.id}</TableCell>
               </TableRow>
             ))}
           </TableBody>

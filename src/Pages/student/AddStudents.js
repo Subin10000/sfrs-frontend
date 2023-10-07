@@ -20,7 +20,8 @@ const AddStudents = () => {
     firstname: "",
     lastname: "",
     phone: "",
-    mail: "",
+    email: "",
+    roll: "",
     classid: "",
     faculty: "",
   });
@@ -48,9 +49,9 @@ const AddStudents = () => {
 
   // Monitor changes in form data and update isStep1Complete
   useEffect(() => {
-    const { firstname, lastname, phone, mail, classid, faculty } = formData;
+    const { firstname, lastname, phone, email, classid, roll, faculty } = formData;
     const allFieldsFilled =
-      firstname && lastname && phone && mail && classid && faculty;
+      firstname && lastname && phone && email && classid && faculty && roll;
     setIsStep1Complete(allFieldsFilled);
   }, [formData]);
 
@@ -132,7 +133,8 @@ const AddStudents = () => {
         firstname: "",
         lastname: "",
         phone: "",
-        mail: "",
+        email: "",
+        roll: "",
         classid: "",
         faculty: "",
       });
@@ -198,9 +200,9 @@ const AddStudents = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="mail"
-                  name="mail"
-                  type="mail"
+                  label="email"
+                  name="email"
+                  type="email"
                   value={formData.mail}
                   onChange={handleChange}
                   required
@@ -213,6 +215,16 @@ const AddStudents = () => {
                   label="Class ID"
                   name="classid"
                   value={formData.classid}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Roll"
+                  name="roll"
+                  value={formData.roll}
                   onChange={handleChange}
                   required
                 />
