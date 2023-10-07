@@ -7,8 +7,6 @@ import {
   Container,
   Box,
   Snackbar,
-  IconButton,
-  InputAdornment,
   Grid,
   Paper,
 } from "@mui/material";
@@ -34,6 +32,9 @@ const AddStudents = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isStep1Complete, setIsStep1Complete] = useState(false);
+
   useEffect(() => {
     // Check if token is set in localStorage
     const token = localStorage.getItem("token");
@@ -45,6 +46,14 @@ const AddStudents = () => {
     }
   }, []);
 
+  // Monitor changes in form data and update isStep1Complete
+  useEffect(() => {
+    const { fname, lname, phone, email, classid, facultyid } = formData;
+    const allFieldsFilled =
+      fname && lname && phone && email && classid && facultyid;
+    setIsStep1Complete(allFieldsFilled);
+  }, [formData]);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -55,11 +64,23 @@ const AddStudents = () => {
   const handleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
       console.log("Selected file:", file.name);
       setSelectedFile(file);
+    }
+  };
+
+  const handleStepChange = () => {
+    // Check if all required fields in step 1 are filled
+    if (isStep1Complete) {
+      setCurrentStep((prevStep) => prevStep + 1);
+    } else {
+      setSnackbarMessage("Please fill in all required fields.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
@@ -109,132 +130,128 @@ const AddStudents = () => {
         <Typography component="h1" variant="h5" align="center">
           Add Students
         </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="First Name"
-                name="fname"
-                value={formData.fname}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Last Name"
-                name="lname"
-                value={formData.lname}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Class ID"
-                name="classid"
-                value={formData.classid}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Faculty ID"
-                name="facultyid"
-                value={formData.facultyid}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleChange}
-                required
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleShowPassword} edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} sm={6}>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    id="file-upload"
-                    onChange={handleFileSelect}
-                  />
-                  <label htmlFor="file-upload">
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      component="span"
-                      color="primary"
-                    >
-                      Upload Image
-                    </Button>
-                  </label>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  {selectedFile && (
-                    <Typography variant="subtitle1">
-                      {selectedFile.name}
-                    </Typography>
-                  )}
-                </Grid>
+        {currentStep === 1 ? (
+          <form onSubmit={handleStepChange}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="First Name"
+                  name="fname"
+                  value={formData.fname}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                  name="lname"
+                  value={formData.lname}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  autoFocus
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Class ID"
+                  name="classid"
+                  value={formData.classid}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Faculty ID"
+                  name="facultyid"
+                  value={formData.facultyid}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} align="center">
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="primary"
+                  onClick={handleStepChange}
+                  style={{ marginTop: 20 }}
+                  disabled={!isStep1Complete}
+                >
+                  Next
+                </Button>
               </Grid>
             </Grid>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <Grid item xs={12} align="center">
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                id="file-upload"
+                onChange={handleFileSelect}
+              />
+              <label htmlFor="file-upload">
+                <Button
+                  fullWidth
+                  variant="contained"
+                  component="span"
+                  color="primary"
+                  size="small"
+                  style={{
+                    margin: "4rem 0 0.5rem 0",
+                    width: "15rem",
+                    padding: "1rem",
+                  }}
+                >
+                  Upload Image
+                </Button>
+              </label>
+              {selectedFile && (
+                <Typography variant="subtitle1">{selectedFile.name}</Typography>
+              )}
+            </Grid>
+
             <Grid item xs={12} align="center">
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
-                style={{ marginTop: 20 }}
+                style={{ marginTop: "3rem" }}
               >
                 Sign Up
               </Button>
             </Grid>
-          </Grid>
-        </form>
+          </form>
+        )}
       </Paper>
       <Snackbar
         open={snackbarOpen}
