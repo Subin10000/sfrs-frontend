@@ -22,7 +22,7 @@ const DashboardCard = ({title, value, descriptionValue, description}) => {
                         </Typography>
                         <Typography
                             color="textPrimary"
-                            variant="h4"
+                            variant="h6"
                         >
                             {value}
                         </Typography>
@@ -31,8 +31,8 @@ const DashboardCard = ({title, value, descriptionValue, description}) => {
                         <Avatar
                             sx={{
                                 backgroundColor: 'success.main',
-                                height: 56,
-                                width: 56
+                                height: 40,
+                                width: 40
                             }}
                         >
                             <Groups3Icon />

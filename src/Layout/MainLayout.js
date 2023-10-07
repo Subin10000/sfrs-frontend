@@ -18,11 +18,12 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
 import MailIcon from "@mui/icons-material/Mail";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
 export default function Layout({ children }) {
+  const navigate = useNavigate();
   const logout = () => {
     localStorage.removeItem("token");
     // Navigate to the login page
