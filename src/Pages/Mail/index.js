@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import { TextField, Button, Typography, Container, Grid } from "@mui/material";
+import { TextField, Button, Typography, Container, Grid, Snackbar, Alert } from "@mui/material";
+import axios from "axios";
+
 
 const EmailTemplatePage = () => {
   const [emailData, setEmailData] = useState({
     to: "",
     subject: "",
-    body: "",
+    text: "",
   });
+  const [openAlert, setOpenAlert] = useState(false);
+
+  const handleAlertClose = () => {
+    setOpenAlert(false);
+  };
 
   const handleInputChange = (e) => {
     setEmailData({
@@ -15,19 +22,31 @@ const EmailTemplatePage = () => {
     });
   };
 
-  const handleSendEmail = () => {
-    // Implement sending the email using an email service or API here
-    // You can use Axios or any other library to make the API call
-    // Example:
-    // axios.post('/api/send-email', emailData).then(response => {
-    //   // Handle successful response, e.g., show a success message
-    // }).catch(error => {
-    //   // Handle error, e.g., show an error message to the user
-    // });
+  const handleSendEmail = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/email",emailData);
+      const apiData = response.data;
+      console.log(apiData)
+      if(apiData.message = "success"){
+        setOpenAlert(true);
+        setEmailData({
+          to: "",
+          subject: "",
+          text: "",
+        })
+      }
+    } catch (error) {
+      console.error("Error fetching teacher data:", error);
+    }
   };
 
   return (
     <Container maxWidth="md" style={{ marginTop: "2rem", textAlign: "center" }}>
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleAlertClose}>
+        <Alert onClose={handleAlertClose} severity="success">
+          Email sent successfully!
+        </Alert>
+      </Snackbar>
       <Typography variant="h5" component="h2">
         Compose Email
       </Typography>
@@ -55,9 +74,9 @@ const EmailTemplatePage = () => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              label="Body"
-              name="body"
-              value={emailData.body}
+              label="Text"
+              name="text"
+              value={emailData.text}
               onChange={handleInputChange}
               required
               fullWidth
