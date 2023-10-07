@@ -1,58 +1,76 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, Divider, Grid, Typography } from "@mui/material";
+import { Box, CircularProgress, Container, Divider, Grid, Typography } from "@mui/material";
 import DashboardCard from "../Components/DashboardCard";
 import { PieChart } from "@mui/x-charts";
 import axios from "axios";
+import jwt_decode from "jwt-decode";
+
 
 const DashboardComponent = () => {
-  const [dashboardData, setDashboardData] = useState(null);
-
-  const fetchDashboardData = async () => {
-    try {
-      const response = await axios.get("/api/teacherInfo");
-      setDashboardData(response.data);
-    } catch (error) {
-      console.error("Error fetching dashboard info:", error);
-    }
-  };
+  const [teacherData, setTeacherData] = useState(null);
+  const [studentData, setStudentData] = useState(null);
+  const [attendanceData, setAttendanceData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []); // Empty dependency array ensures the effect runs once after the initial render
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const decodedToken = jwt_decode(token);
+        const userId = 5;
 
+        const teacher = await axios.get(`http://localhost:8000/teacher/${userId}`);
+        setTeacherData(teacher.data);
+
+        const classId = teacher.data.class.id;
+        const facultyId = teacher.data.faculty.id;
+
+        const students = await axios.get(`http://localhost:8000/students?classId=${classId}&faculty=${facultyId}&search=`);
+        setStudentData(students.data);
+
+        const attendance = await axios.get(`http://localhost:8000/attendance/today`);
+        setAttendanceData(attendance.data);
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching dashboard info:", error);
+        setError(error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
   return (
-    <Container sx={{ marginTop: "10rem", paddingLeft: 0 }}>
+    <Container sx={{ marginTop: "20%", paddingLeft: 0 }}>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <DashboardCard
-            title="Title 1"
+            title="Teacher Name"
             description="Description"
             descriptionValue="Description Value"
-            value="Value"
+            value={teacherData?.user.name ?? "Teacher Name"}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <DashboardCard
-            title="Title 2"
+            title="Students"
             description="Description"
             descriptionValue="Description Value"
-            value="Value"
+            value={studentData?.length ?? "17"}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <DashboardCard
-            title="Title 3"
+            title="Students Attendance"
             description="Description"
             descriptionValue="Description Value"
-            value="Value"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <DashboardCard
-            title="Title 4"
-            description="Description"
-            descriptionValue="Description Value"
-            value="Value"
+            value={attendanceData?.length}
           />
         </Grid>
       </Grid>
@@ -83,8 +101,8 @@ const DashboardComponent = () => {
               series={[
                 {
                   data: [
-                    { id: 0, value: 10, label: "Series A" },
-                    { id: 1, value: 15, label: "Series B" },
+                    { id: 0, value: attendanceData?.length, label: "Absent" },
+                    { id: 1, value: studentData?.length-attendanceData?.length, label: "Present" },
                   ],
                   innerRadius: 40,
                   outerRadius: 100,
