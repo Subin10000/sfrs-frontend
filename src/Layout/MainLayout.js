@@ -23,6 +23,7 @@ const drawerWidth = 240;
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
+
   const location = useLocation();
 
   const logout = () => {
