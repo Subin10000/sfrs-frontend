@@ -22,7 +22,6 @@ const Student = () => {
           `http://localhost:8000/students?classId=${classId}&facultyId=${facultyId}&search=`
         );
         const dataFromBackend = await response.data;
-        console.log(dataFromBackend);
         setStudents(dataFromBackend);
       } catch (error) {
         console.error("Error fetching student data:", error);
