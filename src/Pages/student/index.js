@@ -8,16 +8,19 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import axios from "axios";
 
 const Student = () => {
   const [students, setStudents] = useState([]);
+  const [classId, setClassId] = useState(null);
+  const [facultyId, setFacultyId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/students");
-        const dataFromBackend = await response.json();
-
+        const response = await axios.get(`http://localhost:8000/students?classId=${classId}&facultyId=${facultyId}&search=`);
+        const dataFromBackend = await response.data;
+        console.log(dataFromBackend)
         setStudents(dataFromBackend);
       } catch (error) {
         console.error("Error fetching student data:", error);
@@ -28,7 +31,7 @@ const Student = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{width: 1000, height: "80vh"}}>
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
       >
@@ -51,19 +54,15 @@ const Student = () => {
               <TableCell>Last Name</TableCell>
               <TableCell>Roll No</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Class</TableCell>
-              <TableCell>Faculty</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {students.map((student) => (
               <TableRow key={student.id}>
-                <TableCell>{student.firstName}</TableCell>
-                <TableCell>{student.lastName}</TableCell>
-                <TableCell>{student.rollNo}</TableCell>
-                <TableCell>{student.email}</TableCell>
-                <TableCell>{student.className}</TableCell>
-                <TableCell>{student.faculty}</TableCell>
+                <TableCell>{student?.firstname}</TableCell>
+                <TableCell>{student?.lastname}</TableCell>
+                <TableCell>{student?.roll}</TableCell>
+                <TableCell>{student?.mail}</TableCell>
               </TableRow>
             ))}
           </TableBody>
