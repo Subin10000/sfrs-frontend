@@ -5,7 +5,10 @@ import {
   Button,
   Typography,
   Container,
-  Box,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
   Snackbar,
   Grid,
   Paper,
@@ -22,10 +25,12 @@ const AddStudents = () => {
     phone: "",
     email: "",
     roll: "",
-    classid: "",
-    faculty: "",
+    classId: "", // Changed from class to classId
+    facultyId: "", // Changed from faculty to facultyId
   });
 
+  const [classList, setClassList] = useState([]);
+  const [facultyList, setFacultyList] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -35,6 +40,22 @@ const AddStudents = () => {
   const [isStep1Complete, setIsStep1Complete] = useState(false);
   const [imageId, setImageId] = useState(""); // Store the image_id
   const [imagePath, setImagePath] = useState(""); // Store the image file path
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/dropdown");
+      const apiData = response.data;
+      const semesters = apiData.filter((item) => item.type === "semester");
+      const faculties = apiData.filter((item) => item.type === "Faculty");
+      setClassList(semesters);
+      setFacultyList(faculties);
+    } catch (error) {
+      console.error("Error fetching teacher data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   useEffect(() => {
     // Check if token is set in localStorage
@@ -49,9 +70,10 @@ const AddStudents = () => {
 
   // Monitor changes in form data and update isStep1Complete
   useEffect(() => {
-    const { firstname, lastname, phone, email, classid, roll, faculty } = formData;
+    const { firstname, lastname, phone, email, classId, roll, facultyId } =
+      formData;
     const allFieldsFilled =
-      firstname && lastname && phone && email && classid && faculty && roll;
+      firstname && lastname && phone && email && classId && facultyId && roll;
     setIsStep1Complete(allFieldsFilled);
   }, [formData]);
 
@@ -135,8 +157,8 @@ const AddStudents = () => {
         phone: "",
         email: "",
         roll: "",
-        classid: "",
-        faculty: "",
+        classId: "",
+        facultyId: "",
       });
       setSelectedFile(null);
       setImageId("");
@@ -203,21 +225,30 @@ const AddStudents = () => {
                   label="email"
                   name="email"
                   type="email"
-                  value={formData.mail}
+                  value={formData.email}
                   onChange={handleChange}
                   required
                   autoFocus
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Class ID"
-                  name="classid"
-                  value={formData.classid}
-                  onChange={handleChange}
-                  required
-                />
+                <FormControl fullWidth style={{ minWidth: "120px" }}>
+                  <InputLabel htmlFor="class-select">Class</InputLabel>
+                  <Select
+                    id="class-select"
+                    name="classId"
+                    value={formData.classId}
+                    onChange={handleChange}
+                    required
+                  >
+                    <MenuItem value="">Select Class</MenuItem>
+                    {classList.map((classItem) => (
+                      <MenuItem key={classItem.id} value={classItem.id}>
+                        {classItem.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={6}>
                 <TextField
@@ -230,14 +261,23 @@ const AddStudents = () => {
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Faculty ID"
-                  name="faculty"
-                  value={formData.faculty}
-                  onChange={handleChange}
-                  required
-                />
+                <FormControl fullWidth style={{ minWidth: "120px" }}>
+                  <InputLabel htmlFor="faculty-select">Faculty</InputLabel>
+                  <Select
+                    id="faculty-select"
+                    name="facultyId"
+                    value={formData.facultyId}
+                    onChange={handleChange}
+                    required
+                  >
+                    <MenuItem value="">Select Faculty</MenuItem>
+                    {facultyList.map((facultyItem) => (
+                      <MenuItem key={facultyItem.id} value={facultyItem.id}>
+                        {facultyItem.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12} align="center">
                 <Button
