@@ -9,6 +9,7 @@ import AddTeacher from "./Pages/teacher/component/AddTeacher";
 import Layout from "./Layout/MainLayout";
 import DashboardComponent from "./Pages/dashboard";
 import EmailTemplatePage from "./Pages/Mail";
+import Attencance from "./Pages/attendance";
 
 function App() {
   return (
@@ -16,7 +17,6 @@ function App() {
       <Router>
         <Layout />
         <Routes>
-          {/* <Route path="/" element={<Login />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<DashboardComponent />} />
           <Route path="/nopage" element={<NoPage />} />
@@ -24,6 +24,7 @@ function App() {
           <Route path="/addTeacher" element={<AddTeacher />} />
           <Route path="/students" element={<Student />} />
           <Route path="/teachers" element={<Teacher />} />
+          <Route path="/attendance" element={<Attencance />} />
           <Route path="/mail" element={<EmailTemplatePage />} />
           {/* <Route path="/search/:id" element={<SearchResult />} /> */}
         </Routes>
