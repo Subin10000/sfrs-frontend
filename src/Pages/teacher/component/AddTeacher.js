@@ -106,7 +106,7 @@ const AddTeacher = () => {
                 <InputLabel htmlFor="class-select">Class</InputLabel>
                 <Select
                   id="class-select"
-                  name="selectedClass"
+                  name="class"
                   value={formData.class}
                   onChange={handleInputChange}
                   required
@@ -125,7 +125,7 @@ const AddTeacher = () => {
                 <InputLabel htmlFor="faculty-select">Faculty</InputLabel>
                 <Select
                   id="faculty-select"
-                  name="selectedFaculty"
+                  name="faculty"
                   value={formData.faculty}
                   onChange={handleInputChange}
                   required
