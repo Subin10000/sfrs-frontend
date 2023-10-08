@@ -105,7 +105,7 @@ const Attendance = () => {
               <TableRow key={atten?.student?.firstname}>
                 <TableCell>{atten?.student?.firstname + " " + atten?.student?.lastname}</TableCell>
                 <TableCell>{atten?.student?.email}</TableCell>
-                <TableCell>{atten?.entryTime}</TableCell>
+                <TableCell>{new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kathmandu' }).format(new Date(atten?.entryTime))}</TableCell>
                 <TableCell>{atten?.student?.roll}</TableCell>
               </TableRow>
             ))}
