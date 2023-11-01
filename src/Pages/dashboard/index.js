@@ -4,6 +4,7 @@ import DashboardCard from "../Components/DashboardCard";
 import { LineChart, PieChart } from "@mui/x-charts";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 
 const DashboardComponent = () => {
@@ -13,36 +14,53 @@ const DashboardComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
+  const BASE_URL = "http://localhost:8005";
+
+  const fetchDashboardData = async (setTeacherData, setStudentData, setAttendanceData, setError, setIsLoading) => {
+    try {
+      const token = localStorage.getItem("token");
+      const decodedToken = jwt_decode(token);
+      const userId = decodedToken.id; // This should ideally be dynamic or fetched from a secure source
+  
+      const teacher = await axios.get(`${BASE_URL}/teacher/${userId}`);
+      setTeacherData(teacher.data);
+  
+      const classId = teacher.data.class.id;
+      const facultyId = teacher.data.faculty.id;
+  
+      const students = await axios.get(`${BASE_URL}/students?classId=${classId}&faculty=${facultyId}&search=`);
+      setStudentData(students.data);
+  
+      const attendance = await axios.get(`${BASE_URL}/attendance/today`);
+      setAttendanceData(attendance.data);
+  
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching dashboard info:", error);
+      setError(error);
+      setIsLoading(false);
+    }
+  };
+  
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const decodedToken = jwt_decode(token);
-        const userId = 5;
-
-        const teacher = await axios.get(`http://localhost:8000/teacher/${userId}`);
-        setTeacherData(teacher.data);
-
-        const classId = teacher.data.class.id;
-        const facultyId = teacher.data.faculty.id;
-
-        const students = await axios.get(`http://localhost:8000/students?classId=${classId}&faculty=${facultyId}&search=`);
-        setStudentData(students.data);
-
-        const attendance = await axios.get(`http://localhost:8000/attendance/today`);
-        setAttendanceData(attendance.data);
-
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching dashboard info:", error);
-        setError(error);
-        setIsLoading(false);
-      }
+    let isMounted = true;
+    const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/login");
+      return; 
+    }
+    if (isMounted) {
+      fetchDashboardData(setTeacherData, setStudentData, setAttendanceData, setError, setIsLoading);
+    }
+  
+    return () => {
+      isMounted = false;
     };
-
-    fetchDashboardData();
   }, []);
+  
+  
 
   if (isLoading) {
     return <CircularProgress />;

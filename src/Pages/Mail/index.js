@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField, Button, Typography, Container, Grid, Snackbar, Alert } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 const EmailTemplatePage = () => {
@@ -10,6 +11,16 @@ const EmailTemplatePage = () => {
     text: "",
   });
   const [openAlert, setOpenAlert] = useState(false);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/login");
+      return; 
+    }
+  }, []);
+
 
   const handleAlertClose = () => {
     setOpenAlert(false);
@@ -24,7 +35,7 @@ const EmailTemplatePage = () => {
 
   const handleSendEmail = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/api/email",emailData);
+      const response = await axios.post("http://localhost:8005/api/email",emailData);
       const apiData = response.data;
       console.log(apiData)
       if(apiData.message = "success"){

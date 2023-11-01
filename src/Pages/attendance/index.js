@@ -13,10 +13,12 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
   const [dateFilter, setDateFilter] = useState('today');
+  const navigate = useNavigate();
 
   const handleFilterChange = (event) => {
     setDateFilter(event.target.value);
@@ -27,7 +29,7 @@ const Attendance = () => {
         const token = localStorage.getItem("token");
         const decodedToken = jwt_decode(token);
         const userId = decodedToken.id;
-        const teacherResponse = await axios.get(`http://localhost:8000/teacher/${userId}`);
+        const teacherResponse = await axios.get(`http://localhost:8005/teacher/${userId}`);
         const teacher = teacherResponse.data;
         
         const classId = teacher.class.id;
@@ -35,7 +37,7 @@ const Attendance = () => {
         console.log(teacher.class.id)
         console.log(facultyId)
 
-      const response = await axios.get(`http://localhost:8000/attendance/${dateFilter}`);
+      const response = await axios.get(`http://localhost:8005/attendance/${dateFilter}`);
       const dataFromBackend = await response.data;
       console.log(dataFromBackend)
       setAttendance(dataFromBackend);
@@ -45,6 +47,11 @@ const Attendance = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/login");
+      return; 
+    }
     fetchData();
   }, [dateFilter]);
 

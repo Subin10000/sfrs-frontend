@@ -31,7 +31,7 @@ const AddTeacher = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/dropdown");
+      const response = await axios.get("http://localhost:8005/dropdown");
       const apiData = response.data;
       const semesters = apiData.filter((item) => item.type === "semester");
       const faculties = apiData.filter((item) => item.type === "Faculty");
@@ -62,7 +62,7 @@ const AddTeacher = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/teacher/create",
+        "http://localhost:8005/teacher/create",
         teacherData
       );
 

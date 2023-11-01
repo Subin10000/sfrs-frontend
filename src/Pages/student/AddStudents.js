@@ -43,7 +43,7 @@ const AddStudents = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/dropdown");
+      const response = await axios.get("http://localhost:8005/dropdown");
       const apiData = response.data;
       const semesters = apiData.filter((item) => item.type === "semester");
       const faculties = apiData.filter((item) => item.type === "Faculty");
@@ -102,7 +102,7 @@ const AddStudents = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/students/upload",
+        "http://localhost:8005/students/upload",
         formDataForUpload
       );
       setImageId(response.data.image_id);
@@ -142,7 +142,7 @@ const AddStudents = () => {
 
       // Send the form data with the renamed image path
       const response = await axios.post(
-        "http://localhost:8000/students/create",
+        "http://localhost:8005/students/create",
         formDataWithImageId
       );
       setSnackbarMessage("Student added successfully!");

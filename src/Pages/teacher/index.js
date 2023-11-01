@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,10 +12,12 @@ import axios from "axios";
 
 const Teacher = () => {
   const [teacher, setTeacher] = useState([]);
+  const navigate = useNavigate();
+
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/teacher");
+      const response = await axios.get("http://localhost:8005/teacher");
       setTeacher(response.data);
     } catch (error) {
       console.error("Error fetching teacher data:", error);
@@ -23,6 +25,11 @@ const Teacher = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/login");
+      return; 
+    }
     fetchData();
   }, []);
 

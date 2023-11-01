@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -14,11 +14,17 @@ const Student = () => {
   const [students, setStudents] = useState([]);
   const [classId, setClassId] = useState(null);
   const [facultyId, setFacultyId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/login");
+      return; 
+    }
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/students?classId=${classId}&facultyId=${facultyId}&search=`);
+        const response = await axios.get(`http://localhost:8005/students?classId=${classId}&facultyId=${facultyId}&search=`);
         const dataFromBackend = await response.data;
         setStudents(dataFromBackend);
       } catch (error) {

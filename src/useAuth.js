@@ -1,11 +1,10 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function useAuth() {
   const navigate = useNavigate();
 
   const isAuthenticated = () => {
-    // Replace this with your authentication logic
-    // For example, check if the JWT token is present in localStorage or a cookie
     const jwtToken = localStorage.getItem("jwtToken");
     return !!jwtToken;
   };
@@ -13,6 +12,13 @@ export function useAuth() {
   const redirectToLogin = () => {
     navigate("/login");
   };
+
+  // Redirect to login if user is not authenticated when this hook is used
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      redirectToLogin();
+    }
+  }, []); // Empty dependency array ensures this effect runs once after the initial render
 
   return {
     isAuthenticated,
