@@ -47,6 +47,7 @@ const DashboardComponent = () => {
   useEffect(() => {
     let isMounted = true;
     const token = localStorage.getItem("token");
+    console.log("dashboard",token)
     if(!token){
       navigate("/login");
       return; 

@@ -9,9 +9,11 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
+import jwtDecode from "jwt-decode";
 
 const Teacher = () => {
   const [teacher, setTeacher] = useState([]);
+  const [userData, setUserData] = useState("");
   const navigate = useNavigate();
 
 
@@ -30,6 +32,7 @@ const Teacher = () => {
       navigate("/login");
       return; 
     }
+    setUserData(jwtDecode(token));
     fetchData();
   }, []);
 
@@ -39,14 +42,21 @@ const Teacher = () => {
         style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
       >
         <h2 style={{ flex: 1 }}>Teacher Data</h2>
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to="/addTeacher"
-        >
+        {
+          userData.role == "admin" ? 
+          (
+            <Button
+              variant="contained"
+              color="primary"
+              component={Link}
+              to="/addTeacher"
+            >
           Add Teacher
         </Button>
+          )
+          : ("") 
+        }
+        
       </div>
 
       <TableContainer component={Paper}>

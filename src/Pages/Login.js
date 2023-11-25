@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   TextField,
@@ -8,6 +8,8 @@ import {
   Container,
   Box,
   Snackbar,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 
@@ -18,13 +20,13 @@ function Login() {
     password: "",
   });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
-      console.log("hello");
-      // If token is not set, navigate to the login page
       navigate("/");
       return; // No need to fetch attendance data if not authenticated
     }
@@ -82,16 +84,27 @@ function Login() {
             required
             autoFocus
           />
+          
           <TextField
             fullWidth
             margin="normal"
             label="Password"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={formData.password}
             onChange={handleChange}
             required
           />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showPassword}
+                onChange={(e) => setShowPassword(e.target.checked)}
+              />
+            }
+            label="Show password"
+          />
+           <Link to="/forgotPassword" style={{marginLeft:"7rem"}}>Forgot Password?</Link>
           <Button
             type="submit"
             fullWidth

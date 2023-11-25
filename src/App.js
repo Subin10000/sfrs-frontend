@@ -10,6 +10,7 @@ import Layout from "./Layout/MainLayout";
 import DashboardComponent from "./Pages/dashboard";
 import EmailTemplatePage from "./Pages/Mail";
 import Attencance from "./Pages/attendance";
+import ForgotPassword from "./Pages/ForgotPassword";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/nopage" element={<NoPage />} />
           <Route path="/addStudents" element={<AddStudents />} />
           <Route path="/addTeacher" element={<AddTeacher />} />
+          <Route path="/forgotPassword" element={<ForgotPassword/>}/>
           <Route path="/students" element={<Student />} />
           <Route path="/teachers" element={<Teacher />} />
           <Route path="/attendance" element={<Attencance />} />
