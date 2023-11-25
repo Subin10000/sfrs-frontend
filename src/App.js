@@ -11,6 +11,7 @@ import DashboardComponent from "./Pages/dashboard";
 import EmailTemplatePage from "./Pages/Mail";
 import Attencance from "./Pages/attendance";
 import ForgotPassword from "./Pages/ForgotPassword";
+import ResetPassword from "./Pages/ResetPasswords";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/addStudents" element={<AddStudents />} />
           <Route path="/addTeacher" element={<AddTeacher />} />
           <Route path="/forgotPassword" element={<ForgotPassword/>}/>
+          <Route path="/reset-password/:token" element={<ResetPassword/>} />
           <Route path="/students" element={<Student />} />
           <Route path="/teachers" element={<Teacher />} />
           <Route path="/attendance" element={<Attencance />} />

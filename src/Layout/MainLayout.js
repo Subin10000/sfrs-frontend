@@ -32,9 +32,10 @@ export default function Layout({ children }) {
     navigate("/login");
   };
 
-  const routesWithoutSidebar = ["/login","/forgotPassword"];
+  const routesWithoutSidebar = ["/login","/forgotPassword","/reset-password"];
 
-  const hideSidebar = routesWithoutSidebar.includes(location.pathname);
+  // const hideSidebar = routesWithoutSidebar.includes(location.pathname);
+  const hideSidebar = routesWithoutSidebar.some(path => location.pathname.startsWith(path));
 
   return (
     <>
