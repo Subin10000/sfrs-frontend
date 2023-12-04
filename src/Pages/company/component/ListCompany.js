@@ -11,52 +11,48 @@ import Paper from "@mui/material/Paper";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
-const Teacher = () => {
-  const [teacher, setTeacher] = useState([]);
+// ... (previous imports)
+
+const ListCompany = () => {
+  const [company, setCompany] = useState([]);
   const [userData, setUserData] = useState("");
   const navigate = useNavigate();
 
-
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:8005/teacher");
-      setTeacher(response.data);
+      const response = await axios.get("http://localhost:8005/company");
+      setCompany(response.data);
     } catch (error) {
-      console.error("Error fetching teacher data:", error);
+      console.error("Error fetching company data:", error);
     }
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if(!token){
+    if (!token) {
       navigate("/login");
-      return; 
+      return;
     }
     setUserData(jwtDecode(token));
     fetchData();
-  }, []);
+  }, [navigate]);
 
   return (
     <div style={{ width: "70vw", height: "70vh" }}>
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
       >
-        <h2 style={{ flex: 1 }}>Teacher Data</h2>
-        {
-          userData.role == "admin" ? 
-          (
-            <Button
-              variant="contained"
-              color="primary"
-              component={Link}
-              to="/addTeacher"
-            >
-          Add Teacher
-        </Button>
-          )
-          : ("") 
-        }
-        
+        <h2 style={{ flex: 1 }}>Company Data</h2>
+        {userData.role === "admin" && (
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/addCompany"
+          >
+            Add Company
+          </Button>
+        )}
       </div>
 
       <TableContainer component={Paper}>
@@ -65,17 +61,19 @@ const Teacher = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Class</TableCell>
-              <TableCell>Faculty</TableCell>
+              {/* Add Phone Number and Location columns */}
+              <TableCell>Phone Number</TableCell>
+              <TableCell>Location</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {teacher.map((teach) => (
+            {company?.map((teach) => (
               <TableRow key={teach.id}>
                 <TableCell>{teach.user.name}</TableCell>
                 <TableCell>{teach.user.email}</TableCell>
-                <TableCell>{teach.class.id}</TableCell>
-                <TableCell>{teach.faculty.id}</TableCell>
+                {/* Display Phone Number and Location */}
+                <TableCell>{teach.phoneNumber}</TableCell>
+                <TableCell>{teach.location}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -85,4 +83,4 @@ const Teacher = () => {
   );
 };
 
-export default Teacher;
+export default ListCompany;

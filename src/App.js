@@ -2,16 +2,17 @@ import "./App.css";
 import Login from "./Pages/Login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NoPage from "./Pages/NoPage";
-import AddStudents from "./Pages/student/AddStudents";
-import Student from "./Pages/student";
-import Teacher from "./Pages/teacher";
-import AddTeacher from "./Pages/teacher/component/AddTeacher";
+import Student from "./Pages/Employee";
 import Layout from "./Layout/MainLayout";
 import DashboardComponent from "./Pages/dashboard";
 import EmailTemplatePage from "./Pages/Mail";
 import Attencance from "./Pages/attendance";
 import ForgotPassword from "./Pages/ForgotPassword";
 import ResetPassword from "./Pages/ResetPasswords";
+import AddCompany from "./Pages/company/component/AddCompany";
+import Company from "./Pages/company";
+import AddEmployees from "./Pages/Employee/AddEmployee";
+import Employee from "./Pages/Employee";
 
 function App() {
   return (
@@ -22,12 +23,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<DashboardComponent />} />
           <Route path="/nopage" element={<NoPage />} />
-          <Route path="/addStudents" element={<AddStudents />} />
-          <Route path="/addTeacher" element={<AddTeacher />} />
+          <Route path="/addEmployees" element={<AddEmployees />} />
+          <Route path="/addCompany" element={<AddCompany />} />
           <Route path="/forgotPassword" element={<ForgotPassword/>}/>
           <Route path="/reset-password/:token" element={<ResetPassword/>} />
-          <Route path="/students" element={<Student />} />
-          <Route path="/teachers" element={<Teacher />} />
+          <Route path="/employee" element={<Employee />} />
+          <Route path="/company" element={<Company/>} />
           <Route path="/attendance" element={<Attencance />} />
           <Route path="/mail" element={<EmailTemplatePage />} />
           {/* <Route path="/search/:id" element={<SearchResult />} /> */}

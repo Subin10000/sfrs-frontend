@@ -6,10 +6,9 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
-
 const DashboardComponent = () => {
-  const [teacherData, setTeacherData] = useState(null);
-  const [studentData, setStudentData] = useState([]);
+  const [companyData, setCompanyData] = useState(null);
+  const [employeesData, setEmployeesData] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -18,24 +17,23 @@ const DashboardComponent = () => {
 
   const BASE_URL = "http://localhost:8005";
 
-  const fetchDashboardData = async (setTeacherData, setStudentData, setAttendanceData, setError, setIsLoading) => {
+  const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem("token");
       const decodedToken = jwt_decode(token);
-      const userId = decodedToken.id; // This should ideally be dynamic or fetched from a secure source
-  
-      const teacher = await axios.get(`${BASE_URL}/teacher/${userId}`);
-      setTeacherData(teacher.data);
-  
-      const classId = teacher.data.class.id;
-      const facultyId = teacher.data.faculty.id;
-  
-      const students = await axios.get(`${BASE_URL}/students?classId=${classId}&faculty=${facultyId}&search=`);
-      setStudentData(students.data);
-  
-      const attendance = await axios.get(`${BASE_URL}/attendance/today`);
+      const userId = decodedToken.id;
+
+      const company = await axios.get(`${BASE_URL}/company/${userId}`);
+      setCompanyData(company.data);
+      const companyId = company.data.id;
+
+      const employees = await axios.get(`http://localhost:8005/employees/${companyId}`);
+
+      setEmployeesData(employees.data);
+
+      const attendance = await axios.get(`http://localhost:8005/attendance/${companyId}/today`);
       setAttendanceData(attendance.data);
-  
+
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching dashboard info:", error);
@@ -43,51 +41,50 @@ const DashboardComponent = () => {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     let isMounted = true;
     const token = localStorage.getItem("token");
     console.log("dashboard",token)
-    if(!token){
+    if (!token) {
       navigate("/login");
-      return; 
+      return;
     }
     if (isMounted) {
-      fetchDashboardData(setTeacherData, setStudentData, setAttendanceData, setError, setIsLoading);
+      fetchDashboardData();
     }
-  
+
     return () => {
       isMounted = false;
     };
   }, []);
-  
-  
 
   if (isLoading) {
     return <CircularProgress />;
   }
+
   return (
     <Container sx={{ marginTop: "10%", paddingLeft: 0 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={4}>
           <DashboardCard
-            title="Teacher Name"
+            title="Company Name"
             description="Description"
             descriptionValue="Description Value"
-            value={teacherData?.user.name ?? "Teacher Name"}
+            value={companyData?.user.name ?? "Company Name"}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <DashboardCard
-            title="Students"
+            title="Employees"
             description="Description"
             descriptionValue="Description Value"
-            value={studentData?.length ?? "17"}
+            value={employeesData?.length ?? "17"}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <DashboardCard
-            title="Students Attendance"
+            title="Employees Attendance"
             description="Description"
             descriptionValue="Description Value"
             value={attendanceData?.length}
@@ -100,38 +97,38 @@ const DashboardComponent = () => {
           Attendance Overview
         </Typography>
         <Divider />
-          <Box
-            sx={{
-              width: "100%",
-              margin: "10px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#f5f5f5", // Set your desired background color
-              height: "400px", // Set your desired height
-            }}
-          >
-            <PieChart
-              series={[
-                {
-                  data: [
-                    { id: 0, value: attendanceData?.length, label: "Absent" },
-                    { id: 1, value: studentData?.length-attendanceData?.length, label: "Present" },
-                  ],
-                  innerRadius: 40,
-                  outerRadius: 150,
-                  paddingAngle: 5,
-                  cornerRadius: 5,
-                  startAngle: -90,
-                  endAngle: 180,
-                  cx: 150,
-                  cy: 200,
-                },
-              ]}
-              width={600}
-              height={400}
-            />
-          </Box>
+        <Box
+          sx={{
+            width: "100%",
+            margin: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#f5f5f5",
+            height: "400px",
+          }}
+        >
+          <PieChart
+            series={[
+              {
+                data: [
+                  { id: 0, value: attendanceData?.length, label: "Absent" },
+                  { id: 1, value: employeesData?.length - attendanceData?.length, label: "Present" },
+                ],
+                innerRadius: 40,
+                outerRadius: 150,
+                paddingAngle: 5,
+                cornerRadius: 5,
+                startAngle: -90,
+                endAngle: 180,
+                cx: 150,
+                cy: 200,
+              },
+            ]}
+            width={600}
+            height={400}
+          />
+        </Box>
       </Box>
     </Container>
   );

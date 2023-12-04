@@ -74,20 +74,20 @@ export default function Layout({ children }) {
                     <ListItemText primary="Dashboard" />
                   </ListItemButton>
                 </ListItem>
-                <ListItem key="Students" disablePadding>
-                  <ListItemButton component={Link} to="/students">
+                <ListItem key="Employee" disablePadding>
+                  <ListItemButton component={Link} to="/employee">
                     <ListItemIcon>
                       <SupervisedUserCircleIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Students" />
+                    <ListItemText primary="employee" />
                   </ListItemButton>
                 </ListItem>
-                <ListItem key="Teachers" disablePadding>
-                  <ListItemButton component={Link} to="/teachers">
+                <ListItem key="Company" disablePadding>
+                  <ListItemButton component={Link} to="/company">
                     <ListItemIcon>
                       <AccountCircleIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Teachers" />
+                    <ListItemText primary="Company" />
                   </ListItemButton>
                 </ListItem>
                 <ListItem key="Attendance" disablePadding>

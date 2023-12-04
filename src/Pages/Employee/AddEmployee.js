@@ -17,7 +17,7 @@ import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-const AddStudents = () => {
+const AddEmployees = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstname: "",
@@ -102,7 +102,7 @@ const AddStudents = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8005/students/upload",
+        "http://localhost:8005/employees/upload",
         formDataForUpload
       );
       setImageId(response.data.image_id);
@@ -142,15 +142,15 @@ const AddStudents = () => {
 
       // Send the form data with the renamed image path
       const response = await axios.post(
-        "http://localhost:8005/students/create",
+        "http://localhost:8005/employees/create",
         formDataWithImageId
       );
-      setSnackbarMessage("Student added successfully!");
+      setSnackbarMessage("Employee added successfully!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
       console.log(response.data); // Handle success
 
-      // Clear the form data after successful AddStudent
+      // Clear the form data after successful AddEmployee
       setFormData({
         firstname: "",
         lastname: "",
@@ -166,10 +166,10 @@ const AddStudents = () => {
 
       // Optionally, you can redirect to another page after a delay (e.g., 2 seconds)
       setTimeout(() => {
-        navigate("/students");
+        navigate("/employees");
       }, 2000);
     } catch (error) {
-      setSnackbarMessage("Error adding student.");
+      setSnackbarMessage("Error adding employee.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       console.error(error); // Handle error
@@ -184,7 +184,7 @@ const AddStudents = () => {
     <Container component="main" maxWidth="md">
       <Paper elevation={3} style={{ padding: 20 }}>
         <Typography component="h1" variant="h5" align="center">
-          Add Students
+          Add Employees
         </Typography>
         {currentStep === 1 ? (
           <form onSubmit={handleStepChange}>
@@ -335,7 +335,7 @@ const AddStudents = () => {
                     color="primary"
                     style={{ marginTop: "3rem" }}
                   >
-                    Add Student
+                    Add Employee
                   </Button>
                 </Grid>
               </Grid>
@@ -361,4 +361,4 @@ const AddStudents = () => {
   );
 };
 
-export default AddStudents;
+export default AddEmployees;

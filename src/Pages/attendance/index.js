@@ -29,22 +29,15 @@ const Attendance = () => {
         const token = localStorage.getItem("token");
         const decodedToken = jwt_decode(token);
         const userId = decodedToken.id;
-        const teacherResponse = await axios.get(`http://localhost:8005/teacher/${userId}`);
-        const teacher = teacherResponse.data;
-        
-        const classId = teacher.class.id;
-        const facultyId = teacher.faculty.id;
-        console.log(teacher.class.id)
-        console.log(facultyId)
-
-      const response = await axios.get(`http://localhost:8005/attendance/${dateFilter}`);
-      const dataFromBackend = await response.data;
-      console.log(dataFromBackend)
-      setAttendance(dataFromBackend);
-    } catch (error) {
-      console.error("Error fetching student data:", error);
-    }
-  };
+        const companyResponse = await axios.get(`http://localhost:8005/company/${userId}`);
+        const companyId = companyResponse.data.id;
+        const response = await axios.get(`http://localhost:8005/attendance/${companyId}/${dateFilter}`);
+        const dataFromBackend = response.data;
+        setAttendance(dataFromBackend);
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+      }
+    };
 
   useEffect(() => {
     const token = localStorage.getItem("token");

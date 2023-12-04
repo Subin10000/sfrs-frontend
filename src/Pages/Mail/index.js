@@ -1,26 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Typography, Container, Grid, Snackbar, Alert } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Grid,
+  Snackbar,
+  Alert,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
-
 const EmailTemplatePage = () => {
+  const [employees, setEmployees] = useState([]);
   const [emailData, setEmailData] = useState({
-    to: "",
+    to: [],
     subject: "",
     text: "",
   });
   const [openAlert, setOpenAlert] = useState(false);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if(!token){
+    if (!token) {
       navigate("/login");
-      return; 
+      return;
+    }
+
+    const decodedToken = jwt_decode(token);
+    const companyId = decodedToken.id;
+    try {
+      const response = axios.get(`http://localhost:8005/employees/${companyId}`);
+      const dataFromBackend = response.data;
+      setEmployees(dataFromBackend);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
     }
   }, []);
-
 
   const handleAlertClose = () => {
     setOpenAlert(false);
@@ -35,16 +57,16 @@ const EmailTemplatePage = () => {
 
   const handleSendEmail = async () => {
     try {
-      const response = await axios.post("http://localhost:8005/api/email",emailData);
+      const response = await axios.post("http://localhost:8005/api/email", emailData);
       const apiData = response.data;
-      console.log(apiData)
-      if(apiData.message = "success"){
+      console.log(apiData);
+      if (apiData.message === "success") {
         setOpenAlert(true);
         setEmailData({
-          to: "",
+          to: [],
           subject: "",
           text: "",
-        })
+        });
       }
     } catch (error) {
       console.error("Error fetching teacher data:", error);
@@ -64,14 +86,25 @@ const EmailTemplatePage = () => {
       <form>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField
-              label="To"
-              name="to"
-              value={emailData.to}
-              onChange={handleInputChange}
-              required
-              fullWidth
-            />
+            <FormControl fullWidth>
+              <InputLabel id="to-label">To</InputLabel>
+              <Select
+                labelId="to-label"
+                id="to"
+                name="to"
+                multiple
+                value={emailData.to}
+                onChange={(e) => handleInputChange({ target: { name: "to", value: e.target.value } })}
+                required
+                fullWidth
+              >
+                {employees?.map((employee) => (
+                  <MenuItem key={employee.id} value={employee.email}>
+                    {employee.email}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -96,12 +129,7 @@ const EmailTemplatePage = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              onClick={handleSendEmail}
-            >
+            <Button type="button" variant="contained" color="primary" onClick={handleSendEmail}>
               Send Email
             </Button>
           </Grid>
