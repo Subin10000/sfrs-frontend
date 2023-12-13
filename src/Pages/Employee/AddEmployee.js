@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import {
   TextField,
   Button,
   Typography,
   Container,
-  Select,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Snackbar,
   Grid,
   Paper,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const AddEmployees = () => {
   const navigate = useNavigate();
@@ -24,14 +19,8 @@ const AddEmployees = () => {
     lastname: "",
     phone: "",
     email: "",
-    roll: "",
-    classId: "", // Changed from class to classId
-    facultyId: "", // Changed from faculty to facultyId
   });
 
-  const [classList, setClassList] = useState([]);
-  const [facultyList, setFacultyList] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -41,21 +30,11 @@ const AddEmployees = () => {
   const [imageId, setImageId] = useState(""); // Store the image_id
   const [imagePath, setImagePath] = useState(""); // Store the image file path
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://localhost:8005/dropdown");
-      const apiData = response.data;
-      const semesters = apiData.filter((item) => item.type === "semester");
-      const faculties = apiData.filter((item) => item.type === "Faculty");
-      setClassList(semesters);
-      setFacultyList(faculties);
-    } catch (error) {
-      console.error("Error fetching teacher data:", error);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const [capturedImagesCount, setCapturedImagesCount] = useState(0);
+
+  const videoRef = useRef(null);
+  const captureIntervalRef = useRef(null);
+  const capturedImagesRef = useRef([]);
 
   useEffect(() => {
     // Check if token is set in localStorage
@@ -70,10 +49,8 @@ const AddEmployees = () => {
 
   // Monitor changes in form data and update isStep1Complete
   useEffect(() => {
-    const { firstname, lastname, phone, email, classId, roll, facultyId } =
-      formData;
-    const allFieldsFilled =
-      firstname && lastname && phone && email && classId && facultyId && roll;
+    const { firstname, lastname, phone, email } = formData;
+    const allFieldsFilled = firstname && lastname && phone && email;
     setIsStep1Complete(allFieldsFilled);
   }, [formData]);
 
@@ -82,40 +59,6 @@ const AddEmployees = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-  };
-
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      console.log("Selected file:", file.name);
-      const fileName = formData.firstname
-        ? `${formData.firstname}.png`
-        : `default.png`; // Default name if firstname is empty
-      uploadAndRenameImage(file, fileName);
-    }
-  };
-
-  // Function to upload and rename the image
-  const uploadAndRenameImage = async (file, fileName) => {
-    const formDataForUpload = new FormData();
-    formDataForUpload.append("file", file, fileName);
-
-    try {
-      const response = await axios.post(
-        "http://localhost:8005/employees/upload",
-        formDataForUpload
-      );
-      setImageId(response.data.image_id);
-      setImagePath(response.data.filePath); // Store the image file path
-      setSnackbarMessage("Image uploaded successfully.");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-    } catch (error) {
-      setSnackbarMessage("Error uploading image.");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-      console.error(error);
-    }
   };
 
   const handleStepChange = () => {
@@ -127,6 +70,94 @@ const AddEmployees = () => {
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
+  };
+
+  const handleCaptureImage = () => {
+    try {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          setCurrentStep(2); // Move to the next step once the camera is accessed
+
+          // Start capturing images at intervals
+          captureIntervalRef.current = setInterval(captureImage, 100);
+        }
+      });
+    } catch (error) {
+      console.error("Error accessing camera:", error);
+    }
+  };
+
+  const captureImage = () => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    if (videoRef.current) {
+      const { videoWidth, videoHeight } = videoRef.current;
+
+      canvas.width = videoWidth;
+      canvas.height = videoHeight;
+
+      context.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
+
+      const dataUrl = canvas.toDataURL("image/png");
+      capturedImagesRef.current.push(dataUrl);
+
+      // Update the count of captured images
+      setCapturedImagesCount((prevCount) => prevCount + 1);
+
+      // For demonstration purposes, let's stop capturing after 30 images
+      if (capturedImagesRef.current.length >= 30) {
+        stopCapture();
+      }
+    }
+  };
+
+  const stopCapture = () => {
+    clearInterval(captureIntervalRef.current);
+
+    // Call your upload function with the captured images
+    uploadImages();
+  };
+
+  const uploadImages = async () => {
+    try {
+      const imageUploadPromises = capturedImagesRef.current.map(
+        async (dataUrl, index) => {
+          const fileName = `${formData.firstname}_${index + 1}.png`;
+          const blob = await fetch(dataUrl).then((res) => res.blob());
+
+          const formDataForUpload = new FormData();
+          formDataForUpload.append("file", blob, fileName);
+
+          const response = await axios.post(
+            "http://localhost:8005/employees/upload",
+            formDataForUpload
+          );
+
+          return response.data; // You might want to store the image_id and filePath
+        }
+      );
+
+      const uploadedImages = await Promise.all(imageUploadPromises);
+
+      // Handle success
+      setSnackbarMessage("Images captured and uploaded successfully.");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+
+      // Clear the captured images
+      capturedImagesRef.current = [];
+    } catch (error) {
+      setSnackbarMessage("Error uploading images.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      console.error(error);
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const handleSubmit = async (e) => {
@@ -145,9 +176,11 @@ const AddEmployees = () => {
         "http://localhost:8005/employees/create",
         formDataWithImageId
       );
+
       setSnackbarMessage("Employee added successfully!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
+
       console.log(response.data); // Handle success
 
       // Clear the form data after successful AddEmployee
@@ -156,11 +189,8 @@ const AddEmployees = () => {
         lastname: "",
         phone: "",
         email: "",
-        roll: "",
-        classId: "",
-        facultyId: "",
       });
-      setSelectedFile(null);
+
       setImageId("");
       setImagePath("");
 
@@ -174,10 +204,6 @@ const AddEmployees = () => {
       setSnackbarOpen(true);
       console.error(error); // Handle error
     }
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
   };
 
   return (
@@ -222,7 +248,7 @@ const AddEmployees = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="email"
+                  label="Email"
                   name="email"
                   type="email"
                   value={formData.email}
@@ -230,54 +256,6 @@ const AddEmployees = () => {
                   required
                   autoFocus
                 />
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth style={{ minWidth: "120px" }}>
-                  <InputLabel htmlFor="class-select">Class</InputLabel>
-                  <Select
-                    id="class-select"
-                    name="classId"
-                    value={formData.classId}
-                    onChange={handleChange}
-                    required
-                  >
-                    <MenuItem value="">Select Class</MenuItem>
-                    {classList.map((classItem) => (
-                      <MenuItem key={classItem.id} value={classItem.id}>
-                        {classItem.title}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Roll"
-                  name="roll"
-                  value={formData.roll}
-                  onChange={handleChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth style={{ minWidth: "120px" }}>
-                  <InputLabel htmlFor="faculty-select">Faculty</InputLabel>
-                  <Select
-                    id="faculty-select"
-                    name="facultyId"
-                    value={formData.facultyId}
-                    onChange={handleChange}
-                    required
-                  >
-                    <MenuItem value="">Select Faculty</MenuItem>
-                    {facultyList.map((facultyItem) => (
-                      <MenuItem key={facultyItem.id} value={facultyItem.id}>
-                        {facultyItem.title}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
               </Grid>
               <Grid item xs={12} align="center">
                 <Button
@@ -295,52 +273,56 @@ const AddEmployees = () => {
           </form>
         ) : (
           currentStep === 2 && (
-            <form onSubmit={handleSubmit}>
+            <div>
+              <video
+                ref={videoRef}
+                width="400"
+                height="300"
+                autoPlay
+                style={{ display: "block", margin: "auto" }}
+              ></video>
+              <Typography variant="h6" align="center" style={{ marginTop: 10 }}>
+                Pictures Captured: {capturedImagesCount}
+              </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} align="center">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    id="file-upload"
-                    onChange={handleFileSelect}
-                  />
-                  <label htmlFor="file-upload">
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      component="span"
-                      color="primary"
-                      size="small"
-                      style={{
-                        margin: "4rem 0 0.5rem 0",
-                        width: "15rem",
-                        padding: "1rem",
-                      }}
-                    >
-                      Upload Image
-                    </Button>
-                  </label>
-                  {selectedFile && (
-                    <Typography variant="subtitle1">
-                      {selectedFile.name}
-                    </Typography>
-                  )}
-                </Grid>
-
-                <Grid item xs={12} align="center">
                   <Button
-                    type="submit"
                     variant="contained"
                     color="primary"
+                    onClick={stopCapture}
                     style={{ marginTop: "3rem" }}
                   >
-                    Add Employee
+                    Stop Capturing
                   </Button>
                 </Grid>
               </Grid>
-            </form>
+            </div>
           )
+        )}
+        {currentStep === 2 && (
+          <Grid container spacing={2}>
+            <Grid item xs={12} align="center">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleCaptureImage}
+                style={{ marginTop: "3rem" }}
+              >
+                Capture Images
+              </Button>
+            </Grid>
+            <Grid item xs={12} align="center">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                style={{ marginTop: "3rem" }}
+              >
+                Add Employee
+              </Button>
+            </Grid>
+          </Grid>
         )}
       </Paper>
       <Snackbar
