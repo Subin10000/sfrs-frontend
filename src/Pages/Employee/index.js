@@ -11,26 +11,54 @@ import Paper from "@mui/material/Paper";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 
+
+const fetchCompanyData = async (userId) => {
+  try {
+    const response = await axios.get(`http://localhost:8005/company/${userId}`);
+    return response;
+  } catch (error) {
+    throw new Error(`Error fetching company data: ${error.message}`);
+  }
+};
+
+const fetchEmployeesData = async (companyId) => {
+  try {
+    const response = await axios.get(`http://localhost:8005/employees/${companyId}`);
+    return response;
+  } catch (error) {
+    throw new Error(`Error fetching employee data: ${error.message}`);
+  }
+};
+
 const Employee = () => {
   const [employees, setEmployees] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
+
+  const fetchDataAndSetEmployees = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
       return;
     }
 
-    const decodedToken = jwt_decode(token);
-    const companyId = decodedToken.id;
+    const decodedToken = await jwt_decode(token);
+    const userId = decodedToken.id;
+
     try {
-      const response = axios.get(`http://localhost:8005/employees/${companyId}`);
-      const dataFromBackend =  response.data;
-      setEmployees(dataFromBackend);
+      const userData = await fetchCompanyData(userId);
+      const companyId = userData.data.id;
+      
+      const employeesData = await fetchEmployeesData(companyId);
+      setEmployees(employeesData.data);
+      console.log(employeesData.data)
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
+  };
+
+  useEffect(() => {
+    fetchDataAndSetEmployees();
   }, []);
   
   return (
@@ -57,8 +85,8 @@ const Employee = () => {
           <TableBody>
             {employees?.map((employee) => (
               <TableRow key={employee.id}>
-                <TableCell>{employee?.firstname}</TableCell>
-                <TableCell>{employee?.lastname}</TableCell>
+                <TableCell>{employee?.firstName}</TableCell>
+                <TableCell>{employee?.lastName}</TableCell>
                 <TableCell>{employee?.email}</TableCell>
                 <TableCell>{employee?.location}</TableCell>
                 <TableCell>{employee?.startDate}</TableCell>

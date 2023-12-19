@@ -79,7 +79,7 @@ export default function Layout({ children }) {
                     <ListItemIcon>
                       <SupervisedUserCircleIcon />
                     </ListItemIcon>
-                    <ListItemText primary="employee" />
+                    <ListItemText primary="Employee" />
                   </ListItemButton>
                 </ListItem>
                 <ListItem key="Company" disablePadding>

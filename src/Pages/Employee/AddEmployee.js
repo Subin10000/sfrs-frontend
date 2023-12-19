@@ -10,15 +10,17 @@ import {
   Paper,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
+import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 const AddEmployees = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
-    phone: "",
+    firstName: "",
+    lastName: "",
+    location: "",
     email: "",
+    companyID: ""
   });
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -28,6 +30,7 @@ const AddEmployees = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isStep1Complete, setIsStep1Complete] = useState(false);
   const [imageId, setImageId] = useState(""); // Store the image_id
+  const [companyId, setCompanyId] = useState(""); // Store the image_id
   const [imagePath, setImagePath] = useState(""); // Store the image file path
 
   const [capturedImagesCount, setCapturedImagesCount] = useState(0);
@@ -45,12 +48,15 @@ const AddEmployees = () => {
       navigate("/login");
       return; // No need to fetch attendance data if not authenticated
     }
+    const decodedToken = jwt_decode(token);
+    const currentCompanyId = decodedToken.id;
+    setCompanyId(currentCompanyId)
   }, []);
 
   // Monitor changes in form data and update isStep1Complete
   useEffect(() => {
-    const { firstname, lastname, phone, email } = formData;
-    const allFieldsFilled = firstname && lastname && phone && email;
+    const { firstName, lastName, location, email } = formData;
+    const allFieldsFilled = firstName && lastName && location && email;
     setIsStep1Complete(allFieldsFilled);
   }, [formData]);
 
@@ -124,7 +130,7 @@ const AddEmployees = () => {
     try {
       const imageUploadPromises = capturedImagesRef.current.map(
         async (dataUrl, index) => {
-          const fileName = `${formData.firstname}_${index + 1}.png`;
+          const fileName = `${formData.firstName}_${index + 1}.png`;
           const blob = await fetch(dataUrl).then((res) => res.blob());
 
           const formDataForUpload = new FormData();
@@ -181,13 +187,13 @@ const AddEmployees = () => {
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
 
-      console.log(response.data); // Handle success
+      // console.log(response.data);  Handle success
 
       // Clear the form data after successful AddEmployee
       setFormData({
-        firstname: "",
-        lastname: "",
-        phone: "",
+        firstName: "",
+        lastName: "",
+        location: "",
         email: "",
       });
 
@@ -219,8 +225,8 @@ const AddEmployees = () => {
                 <TextField
                   fullWidth
                   label="First Name"
-                  name="firstname"
-                  value={formData.firstname}
+                  name="firstName"
+                  value={formData.firstName}
                   onChange={handleChange}
                   required
                 />
@@ -229,8 +235,8 @@ const AddEmployees = () => {
                 <TextField
                   fullWidth
                   label="Last Name"
-                  name="lastname"
-                  value={formData.lastname}
+                  name="lastName"
+                  value={formData.lastName}
                   onChange={handleChange}
                   required
                 />
@@ -238,9 +244,9 @@ const AddEmployees = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Phone"
-                  name="phone"
-                  value={formData.phone}
+                  label="location"
+                  name="location"
+                  value={formData.location}
                   onChange={handleChange}
                   required
                 />

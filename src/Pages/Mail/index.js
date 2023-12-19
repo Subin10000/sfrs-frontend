@@ -11,10 +11,29 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Chip,
 } from "@mui/material";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+
+const fetchCompanyData = async (userId) => {
+  try {
+    const response = await axios.get(`http://localhost:8005/company/${userId}`);
+    return response;
+  } catch (error) {
+    throw new Error(`Error fetching company data: ${error.message}`);
+  }
+};
+
+const fetchEmployeesData = async (companyId) => {
+  try {
+    const response = await axios.get(`http://localhost:8005/employees/${companyId}`);
+    return response;
+  } catch (error) {
+    throw new Error(`Error fetching employee data: ${error.message}`);
+  }
+};
 
 const EmailTemplatePage = () => {
   const [employees, setEmployees] = useState([]);
@@ -26,22 +45,30 @@ const EmailTemplatePage = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchDataAndSetEmployees = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
       return;
     }
 
-    const decodedToken = jwt_decode(token);
-    const companyId = decodedToken.id;
+    const decodedToken = await jwt_decode(token);
+    const userId = decodedToken.id;
+
     try {
-      const response = axios.get(`http://localhost:8005/employees/${companyId}`);
-      const dataFromBackend = response.data;
-      setEmployees(dataFromBackend);
+      const userData = await fetchCompanyData(userId);
+      const companyId = userData.data.id;
+
+      const employeesData = await fetchEmployeesData(companyId);
+      setEmployees(employeesData.data);
+      console.log(employeesData.data);
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
+  };
+
+  useEffect(() => {
+    fetchDataAndSetEmployees();
   }, []);
 
   const handleAlertClose = () => {
@@ -49,9 +76,24 @@ const EmailTemplatePage = () => {
   };
 
   const handleInputChange = (e) => {
+    if (e.target.name === "to") {
+      setEmailData({
+        ...emailData,
+        to: e.target.value, // Change this line to handle multiple selected values
+      });
+    } else {
+      setEmailData({
+        ...emailData,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
+  
+
+  const handleRemoveEmail = (removedEmail) => {
     setEmailData({
       ...emailData,
-      [e.target.name]: e.target.value,
+      to: emailData.to.filter((email) => email !== removedEmail),
     });
   };
 
@@ -69,9 +111,10 @@ const EmailTemplatePage = () => {
         });
       }
     } catch (error) {
-      console.error("Error fetching teacher data:", error);
+      console.error("Error sending email:", error);
     }
   };
+
 
   return (
     <Container maxWidth="md" style={{ marginTop: "2rem", textAlign: "center" }}>
@@ -86,25 +129,38 @@ const EmailTemplatePage = () => {
       <form>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel id="to-label">To</InputLabel>
-              <Select
-                labelId="to-label"
-                id="to"
-                name="to"
-                multiple
-                value={emailData.to}
-                onChange={(e) => handleInputChange({ target: { name: "to", value: e.target.value } })}
-                required
-                fullWidth
-              >
-                {employees?.map((employee) => (
-                  <MenuItem key={employee.id} value={employee.email}>
-                    {employee.email}
-                  </MenuItem>
+          <FormControl fullWidth>
+          <InputLabel id="to-label">To</InputLabel>
+          <Select
+            labelId="to-label"
+            id="to"
+            name="to"
+            multiple
+            value={emailData.to}
+            onChange={(e) => handleInputChange({ target: { name: "to", value: e.target.value } })}
+            required
+            fullWidth
+            renderValue={(selected) => (
+              <div>
+                {selected.map((email) => (
+                  <Chip
+                    key={email}
+                    label={email}
+                    onDelete={() => handleRemoveEmail(email)}
+                    color="primary"
+                    style={{ margin: "2px" }}
+                  />
                 ))}
-              </Select>
-            </FormControl>
+              </div>
+            )}
+          >
+            {employees?.map((employee) => (
+              <MenuItem key={employee.id} value={employee.email}>
+                {employee.email}
+              </MenuItem>
+            ))}
+          </Select>
+      </FormControl>
           </Grid>
           <Grid item xs={12}>
             <TextField

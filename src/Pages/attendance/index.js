@@ -33,6 +33,7 @@ const Attendance = () => {
         const companyId = companyResponse.data.id;
         const response = await axios.get(`http://localhost:8005/attendance/${companyId}/${dateFilter}`);
         const dataFromBackend = response.data;
+        console.log(dataFromBackend)
         setAttendance(dataFromBackend);
       } catch (error) {
         console.error("Error fetching student data:", error);
@@ -102,11 +103,11 @@ const Attendance = () => {
           </TableHead>
           <TableBody>
             {attendance.map((atten) => (
-              <TableRow key={atten?.student?.firstname}>
-                <TableCell>{atten?.student?.firstname + " " + atten?.student?.lastname}</TableCell>
-                <TableCell>{atten?.student?.email}</TableCell>
+              <TableRow key={atten?.employee?.id}>
+                <TableCell>{atten?.employee?.firstName + " " + atten?.employee?.lastName}</TableCell>
+                <TableCell>{atten?.employee?.email}</TableCell>
                 <TableCell>{new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kathmandu' }).format(new Date(atten?.entryTime))}</TableCell>
-                <TableCell>{atten?.student?.roll}</TableCell>
+                {/* <TableCell>{atten?.employee?.roll}</TableCell> */}
               </TableRow>
             ))}
           </TableBody>
